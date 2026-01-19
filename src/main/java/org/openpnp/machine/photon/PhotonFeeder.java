@@ -575,6 +575,14 @@ public class PhotonFeeder extends ReferenceFeeder {
 
         this.slotAddress = slotAddress;
 
+        if (oldSlot != null && oldSlot.getFeeder() == this) {
+            oldSlot.setFeeder(null);
+        }
+
+        if (getSlot() != null) {
+            getSlot().setFeeder(this);
+        }
+
         resetPickCorrection();
 
         firePropertyChange("slotAddress", oldValue, slotAddress);
@@ -756,8 +764,9 @@ public class PhotonFeeder extends ReferenceFeeder {
     }
 
     private void emptyPickCorrectionAccumulatorIntoCorrection() {
-        if (visionsSinceLastFeed <= 0)
+        if (visionsSinceLastFeed <= 0) {
             return;
+        }
 
         Location averageOffset = pickCorrectionOffsetAccumulatorSinceLastFeed.multiply(1.0 / (double)visionsSinceLastFeed);
         pickCorrectionOffset = pickCorrectionOffset.add(averageOffset.multiply(correctionGain));
